@@ -1,0 +1,58 @@
+UC1:ICulturalHeritageAgencyManager CulturalHeritageAgencyManager DBCulturalHeritage IDBCulturalHeritage CulturalHeritage         
+UC2:IDBCulturalHeritage DBCulturalHeritage ICulturalHeritageAgencyManager CulturalHeritageAgencyManager CulturalHeritageChecker BeanCulturalHeritage CulturalHeritage      
+UC3:IDBCulturalHeritage DBCulturalHeritage ICulturalHeritageAgencyManager CulturalHeritageAgencyManager CulturalHeritageChecker BeanCulturalHeritage CulturalHeritage       
+UC4:IDBCulturalHeritage DBCulturalHeritage ICulturalHeritageAgencyManager CulturalHeritageAgencyManager Search StandardSearch BeanCulturalHeritage ISearch CulturalHeritage    
+UC5:CardBC BeanCulturalHeritage ICulturalHeritageCommonManager CulturalHeritageCommonManager CulturalHeritage      
+UC6:IDBRefreshmentPoint DBRefreshmentPoint RefreshmentPointAgencyManager IRefreshmentPointAgencyManager          
+UC7:DBConvention IDBConvention RefreshmentPointAgencyManager IRefreshmentPointAgencyManager BeanConvention         
+UC8:IDBRefreshmentPoint DBRefreshmentPoint RefreshmentPointAgencyManager IRefreshmentPointAgencyManager ControlData BeanRefreshmentPoint        
+UC9:IDBRefreshmentPoint DBRefreshmentPoint RefreshmentPointAgencyManager IRefreshmentPointAgencyManager Search StandardSearch BeanRefreshmentPoint ISearch     
+UC10:CardPR BeanRefreshmentPoint IRefreshmentPointCommonManager RefreshmentPointCommonManager IDBRefreshmentPoint DBRefreshmentPoint RefreshmentPointAgencyManager IRefreshmentPointAgencyManager     
+UC11:DBConvention IDBConvention BeanConvention         
+UC12:TouristCard Tourist TouristTableModel BeanTourist TouristCommonManager       
+UC13:TouristAgencyManager ITouristAgencyManager Tourist DBTourist IDBTourist BeanTourist       
+UC14:DBTourist IDBTourist TouristAgencyManager ITouristAgencyManager BeanTourist        
+UC15:DBTourist IDBTourist TouristAgencyManager ITouristAgencyManager ControlData BeanTourist TouristCommonManager      
+UC16:DBTourist IDBTourist TouristAgencyManager ITouristAgencyManager BeanTourist         
+UC17:BannerDialog BannerNode ControlData IDBBanner DBBanner BeanBanner IAdvertisementManager AdvertisementManager AdvertisementAgencyManager IAdvertisementAgencyManager ControllDataAdvertisement GlobalConstants Banner
+UC18:AdvertisementManager IAdvertisementManager IDBBanner DBBanner BeanBanner ErrorMessage        
+UC19:IDBBanner DBBanner AdvertisementManager IAdvertisementManager BeanBanner AdvertisementAgencyManager IAdvertisementAgencyManager ControllDataAdvertisement GlobalConstants Banner    
+UC20:BannerDialog BannerNode ControlData IDBBanner DBBanner AdvertisementManager IAdvertisementManager BeanBanner AdvertisementAgencyManager IAdvertisementAgencyManager ControllDataAdvertisement GlobalConstants Banner
+UC21:DBNews IDBNews AdvertisementAgencyManager IAdvertisementAgencyManager News ControlData BeanNews ControllDataAdvertisement     
+UC22:DBNews IDBNews AdvertisementAgencyManager IAdvertisementAgencyManager BeanNews ControllDataAdvertisement        
+UC23:DBNews IDBNews AdvertisementAgencyManager IAdvertisementAgencyManager News ControlData BeanNews ControllDataAdvertisement     
+UC24:CulturalHeritageAgencyManager ICulturalHeritageAgencyManager RefreshmentPointAgencyManager IRefreshmentPointAgencyManager CulturalHeritageCommonManager RefreshmentPointCommonManager IRefreshmentPointCommonManager ICulturalHeritageCommonManager FeedBackTableModel TouristAgencyManager ITouristAgencyManager   
+UC25:DBLocationStatistic RefreshmentPointCommonManager CulturalHeritageAgencyManager ICulturalHeritageCommonManager 
+UC26:BeanVisitBC BeanVisitPR FeedBackTableModel           
+UC27:Search ISearch            
+UC28:DBTag IDBTag TagAgencyOperatorManager ITagAgencyOperatorManager TagTableModel BeanTag        
+UC29:ITagAgencyOperatorManager TagAgencyOperatorManager            
+UC30:ITagAgencyOperatorManager TagAgencyOperatorManager DBTag IDBTag BeanTag         
+UC31:BeanOperatorAgency DBAgencyOperator OperatorAgency IDBAgencyOperator          
+UC32:BeanOperatorAgency DBAgencyOperator OperatorAgency           
+UC33:BeanTourist ControlData IDBTourist DBTourist ITouristClientManager TouristClientManager TouristCard      
+UC34:Search ISearch CulturalHeritageCommonManager ICulturalHeritageCommonManager IRefreshmentPointCommonManager RefreshmentPointCommonManager        
+UC35:Authentication IAuthentication ControlData BeanTourist BeanOperatorRefreshmentPoint         
+UC36:Authentication IAuthentication ControlData           
+UC37:IAuthentication             
+UC38:DBBanner IDBBanner AdvertisementRefreshmentPointManager IAdvertisementRefreshmentPointManager ControlData BannerDialog BannerNode BeanBanner IAdvertisementManager AdvertisementManager ControllDataAdvertisement   
+UC39:DBBanner IDBBanner AdvertisementRefreshmentPointManager IAdvertisementRefreshmentPointManager ControlData BannerDialog BannerNode BeanBanner IAdvertisementManager AdvertisementManager ControllDataAdvertisement   
+UC40:DBBanner IDBBanner AdvertisementRefreshmentPointManager IAdvertisementRefreshmentPointManager BeanBanner IAdvertisementManager AdvertisementManager ControllDataAdvertisement      
+UC41:ControlData DBMenu IDBMenu DBDish IDBDish BeanMenu BeanDish       
+UC42:ControlData DBMenu IDBMenu DBDish IDBDish BeanMenu BeanDish       
+UC43:DBRefreshmentPoint IDBRefreshmentPoint ControlData RefreshmentPoint BeanRefreshmentPoint IRefreshmentPointCommonManager RefreshmentPointCommonManager PRNode      
+UC44:DBConvention ControlData IDBConvention BeanConvention         
+UC45:DBLocationStatistic RefreshmentPointCommonManager IRefreshmentPointCommonManager BeanRefreshmentPoint BeanCulturalHeritage        
+UC46:ControlData DBSearchPreference IDBSearchPreference TouristCommonManager BeanSearchPreference IDBGenericPreference DBGenericPreference      
+UC47:ControlData DBTourist IDBTourist TouristClientManager ITouristClientManager TouristCommonManager TouristCard BeanTourist    
+UC48:ControlData DBGenericPreference IDBGenericPreference TouristClientManager BeanGenericPreference ITouristClientManager      
+UC49:SiteTableModel TouristClientManager ITouristClientManager CulturalHeritageCommonManager ICulturalHeritageCommonManager RefreshmentPointCommonManager IRefreshmentPointCommonManager       
+UC50:DBVisitBC IDBVisitBC DBVisitPR IDBVisitPR CulturalHeritageVisitChecker SiteTableModel ControlData BeanVisitBC     
+UC51:DBGenericPreference IDBGenericPreference TouristCommonManager ITouristClientManager ControlData BeanGenericPreference        
+UC52:DBGenericPreference IDBGenericPreference TouristCommonManager ITouristClientManager BeanGenericPreference IDBTourist DBTourist       
+UC53:DBVisitBC IDBVisitBC DBVisitPR IDBVisitPR CulturalHeritageVisitChecker SiteTableModel ControlData       
+UC54:BeanVisitBC BeanVisitPR DBVisitBC IDBVisitBC DBVisitPR IDBVisitPR CulturalHeritageVisitChecker SiteTableModel ControlData 
+UC55:CulturalHeritageVisitChecker ControlData BeanVisitBC BeanVisitPR          
+UC56:Point3D Point3DRenderer Search ISearch StandardSearch         
+UC57:ISearch            
+UC58:SiteTableModel CardBC CardPR BeanRefreshmentPoint BeanCulturalHeritage        

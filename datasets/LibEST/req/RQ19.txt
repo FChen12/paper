@@ -1,0 +1,23 @@
+REQUIREMENT 19: MESSAGE TYPES
+     
+This document uses existing media types for the messages as specified by FTP and HTTP [RFC2585], application/pkcs10 [RFC5967], and CMC [RFC5272].
+
+For consistency with [RFC5273], each distinct EST message type uses an HTTP Content-Type header with a specific media type.
+
+The EST messages and their corresponding media types for each operation are:
+
+   +--------------------+--------------------------+-------------------+
+   | Message type (per operation) | Request media type Response media type(s) Source(s) of types | Request section(s) Response section|
+   +====================+==========================+===================+
+   | Distribution of CA Certificates /cacerts | N/A application/pkcs7-mime [RFC5751] | Section 4.1 Section 4.1.1      |
+   +--------------------+--------------------------+-------------------+
+   | Client Certificate Request Functions /simpleenroll /simplereenroll| application/pkcs10 application/pkcs7-mime [RFC5967] [RFC5751]     | Sections 4.2/4.2.1 Section 4.2.2|
+   +--------------------+--------------------------+-------------------+
+   | Full CMC /fullcmc          | application/pkcs7-mime application/pkcs7-mime [RFC5751] | Section 4.3.1 Section 4.3.2    |
+   +--------------------+--------------------------+-------------------+
+   | Server-Side Key Generation /serverkeygen  | application/pkcs10 multipart/mixed (application/pkcs7-mime & application/pkcs8) [RFC5967] [RFC5751] [RFC5958]  | Section 4.4.1 Section 4.4.2    |
+   +--------------------+--------------------------+-------------------+
+   | CSR Attributes /csrattrs    | N/A application/csrattrs (This document) | Section 4.5.1 Section 4.5.2    |
+   +--------------------+--------------------------+-------------------+
+
+                                 Figure 6

@@ -1,0 +1,11 @@
+Nome: Logout
+Attori: Utente registrato
+Descrizione: Permette ad un utente di uscire dal sistema
+Precondizioni:
+	L'utente e loggato al sistema 	Clicca sul pulsante di logout
+Sequenza degli eventi
+Utente
+Sistema
+1.	Visualizza il form di login
+Postcondizioni:
+	L'utente può nuovamente loggarsi al sistema
