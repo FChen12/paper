@@ -537,7 +537,7 @@ REQ_PREPROCESSOR_IT = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER, LEMMA_IT, ST
 
 # Chose the word embedding creator here. This does not have to be set if you are using precalculated files.
 #WORD_EMBD_CREATOR = MockWordEmbeddingCreator() # MockWordEmbeddingCreator creates random embeddings
-WORD_EMBD_CREATOR = FastTextEmbeddingCreator("/content/drive/MyDrive/models/cc.it.300.bin") # Use this for monolingual embeddings. Path to model as constructor argument.
+WORD_EMBD_CREATOR = FastTextEmbeddingCreator("/content/models/cc.it.300.bin") # Use this for monolingual embeddings. Path to model as constructor argument.
 #WORD_EMBD_CREATOR = FastTextAlignedEngItalEmbeddingCreator() # Use this for smos. Path to models as constructor argument.
 #WORD_EMBD_CREATOR = FineTunedFastTextEmbeddingCreator() # Use this for the software requirement specific fasttext model by telge.
 #WORD_EMBD_CREATOR = FastTextEmbeddingCreator() # Use this for monolingual embeddings
