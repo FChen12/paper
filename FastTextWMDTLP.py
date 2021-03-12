@@ -406,6 +406,12 @@ class FastTextSentenceLevelIdentifierWMDTLP(FastTextCodeElementLevelWMDTLP):
     def output_prefix(self):
         return "ft_sentencelevel_Identifier_wmd"
     
+class FastTextSentenceLevelIdentifierClassNameOptionalWMDTLP(FastTextSentenceLevelIdentifierWMDTLP):
+    def cls_name_voter(self, m_dict):
+        return not m_dict
+    
+    def output_prefix(self):
+        return "ft_sentencelevel_Identifier_wmd"
 
 class FastTextUCSentenceLevelIdentifierWMDTLP(FastTextSentenceLevelIdentifierWMDTLP):
     """  WMD distance: Req as sentence list, Class as method with class name prefix list 
@@ -764,7 +770,7 @@ class FastTextCommentIdentifierSentenceWMDTLP(FastTextCodeElementLevelWMDTLP):
                 req_dict[req_emb.file_name] = []
             else:
                 req_dict[req_emb.file_name_without_extension] = []
-            for req_sentence in req_emb.vector.grouped_token_list:
+            for req_sentence in self._choose_req_words(req_emb):
                 if self._dataset.keys_with_extension():
                     req_dict[req_emb.file_name].append(req_sentence)
                 else:
@@ -772,17 +778,19 @@ class FastTextCommentIdentifierSentenceWMDTLP(FastTextCodeElementLevelWMDTLP):
                 
         code_dict = dict()
         for code_emb in code_embeddings:
+            code_key = code_emb.file_name_without_extension
             if self._dataset.keys_with_extension():
-                code_dict[code_emb.file_name] = []
-            else:
-                code_dict[code_emb.file_name_without_extension] = []
+                code_key = code_emb.file_name
+            code_dict[code_key] = []
             for cls in code_emb.vector.classifiers:
+                class_name_words = self._choose_classname_words(cls)
                 for meth in cls.methods:
                     method_words = [] + cls.get_name_words() + meth.get_name_words() + meth.get_comment_tokens() + meth.get_param_plain_list() + meth.get_returntype_words()
-                    if self._dataset.keys_with_extension():
-                        code_dict[code_emb.file_name].append(method_words)
-                    else:
-                        code_dict[code_emb.file_name_without_extension].append(method_words)
+                    if method_words:
+                        code_dict[code_key].append(method_words)
+                if self.cls_name_voter(code_dict[code_key]) and class_name_words:
+                    code_dict[code_key].append(class_name_words)
+                        
         wmd_func = self._word_emb_creator.word_movers_distance
         if isinstance(self._dataset, Smos):
             assert isinstance(self._word_emb_creator, FastTextAlignedEngItalEmbeddingCreator)
@@ -915,6 +923,20 @@ class FastTextCommentIdentifierWMDTLP(FastTextCodeElementLevelWMDTLP):
         
     def output_prefix(self):
         return "ft_comm_Identifier_wmd"
+    
+    
+class FastTextCommentIdentifierClassNameVoterOptionalWMDTLP(FastTextCommentIdentifierWMDTLP):
+    def _choose_method_words(self, meth):
+        return meth.get_name_words() + meth.get_param_plain_list() + meth.get_returntype_words() + meth.get_comment_tokens()
+    
+    def _choose_req_words(self, req_emb):
+        return [req_emb.vector.token_list]
+    
+    def cls_name_voter(self, m_dict):
+        return not m_dict
+    
+    def output_prefix(self):
+        return "ft_comm_Identifier_classname_optional_wmd"
     
 class FastTextCommentLevelWMDTLP(FastTextCodeElementLevelWMDTLP):
     """ WMD distance: Req as word list, Class as list  of comment word lists
