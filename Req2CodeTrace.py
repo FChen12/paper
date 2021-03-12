@@ -588,30 +588,81 @@ eval_strategy = WritePrecRecallF1Excel()
 eval_strategy.set_trace_link_processor(tlp)
 eval_strategy.run()
 
-"""
-DROP_THRESHOLDS = [0.43]#Util.get_range_array(0.4, 0.45, 0.01)
-MAJORITY_THRESHOLDS = [0.6]#Util.get_range_array(0.56, 0.65, 0.01)
+
+DROP_THRESHOLDS = Util.get_range_array(0.4, 0.45, 0.01)
+MAJORITY_THRESHOLDS = Util.get_range_array(0.53, 0.56, 0.01)
 ELEM_THRESHOLDS = [1]#Util.get_range_array(0.67, 0.69, 0.01)
 ###eval_strategy = MeanAveragePrecision(1)
 eval_strategy = WritePrecRecallF1Excel()
-
+"""
 w = 0.88
 CODE_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, JAVASTOP, LOWER, LEMMA, STOP, WordLengthFilter(2)])
 REQ_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER, LEMMA, STOP, WordLengthFilter(2)])
 tlc = WeightedSimilaritySumCallElementLevelMajorityTLC(w, CallGraphTLC.NeighborStrategy.both)
-"""
-#Itrust ohne Methcomm
-tlp = FastTextSentenceLevelIdentifierClassNameOptionalWMDTLP.create(Itrust(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
-r = MockEmbeddingCreator(REQ_PREPROCESSOR, None, WordAndSentenceTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR)
-c = MockEmbeddingCreator(CODE_PREPROCESSOR, None, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Itrust(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
-tlp.precalculate_for_callgraph_files(None, None, r, c, "_javadoc")
 
+#Itrust Filelevel
+tlp = FastTextCommentIdentifierFilelevelClassNameOptionalWMDTLP.create(Itrust(), WORD_EMBD_CREATOR, tlc, DROP_THRESHOLDS, False, None)
+r = MockEmbeddingCreator(REQ_PREPROCESSOR, None, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR)
+c = MockEmbeddingCreator(CODE_PREPROCESSOR, None, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Itrust(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, r, c, "_javadoc")
+
+#Etour Filelevel
+tlp = FastTextCommentIdentifierFilelevelClassNameOptionalWMDTLP.create(Etour308(), WORD_EMBD_CREATOR, tlc, DROP_THRESHOLDS, False, None)
+r = MockEmbeddingCreator(REQ_PREPROCESSOR, None, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR)
+c = MockEmbeddingCreator(CODE_PREPROCESSOR, None, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, r, c, "_javadoc")
+
+# Etour best verfahren cossim
+tlp = MethodCallGraphTLP.create(Etour308(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+r = UCAverageWordEmbeddingCreatorWithNameDescFlow(UCTokenizer(Etour308(), False), REQ_PREPROCESSOR, WORD_EMBD_CREATOR, PREPROCESSED_REQ_OUTPUT_DIR)
+c = MethodCommentSignatureCallGraphEmbeddingCreator(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, None, r, c, "_javadoc")
+
+#Etour cossim ohne methcomm
+tlp = MethodCallGraphTLP.create(Etour308(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+r = UCAverageWordEmbeddingCreatorWithNameDescFlow(UCTokenizer(Etour308(), False), REQ_PREPROCESSOR, WORD_EMBD_CREATOR, PREPROCESSED_REQ_OUTPUT_DIR)
+c = MethodSignatureCallGraphEmbeddingCreator(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, None, r, c, "_javadoc")
+
+#Etour cossim satzweise Req
+tlp = MethodCallGraphTLP.create(Etour308(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+r = AverageSentenceEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordAndSentenceTokenizer(Etour308(), False),  PREPROCESSED_REQ_OUTPUT_DIR)
+c = MethodCommentSignatureCallGraphEmbeddingCreator(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, None, r, c, "_javadoc")
+
+#Etour cossim fliess Req
+tlp = MethodCallGraphTLPWholeReq.create(Etour308(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+r = AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR)
+c = MethodCommentSignatureCallGraphEmbeddingCreator(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, None, r, c, "_javadoc")
+
+
+
+#itrust cossim ohne methcomm
+tlp = MethodCallGraphTLP.create(Itrust(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+r = AverageSentenceEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordAndSentenceTokenizer(Itrust(), False),  PREPROCESSED_REQ_OUTPUT_DIR)
+c = MethodSignatureCallGraphEmbeddingCreator(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Itrust(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, None, r, c, "_javadoc")
+
+#itrust cossim satzweise Req / best verfahren
+tlp = MethodCallGraphTLP.create(Itrust(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+r = AverageSentenceEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordAndSentenceTokenizer(Itrust(), False),  PREPROCESSED_REQ_OUTPUT_DIR)
+c = MethodCommentSignatureCallGraphEmbeddingCreator(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Itrust(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, None, r, c, "_javadoc")
+
+#itrust cossim fliess Req
+tlp = MethodCallGraphTLPWholeReq.create(Itrust(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+r = AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR)
+c = MethodCommentSignatureCallGraphEmbeddingCreator(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Itrust(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp.precalculate_tracelinks(None, None, r, c, "_javadoc")
+
+"""
 #Itrust ohne UC Struktur, Fliestext
 tlp = FastTextCommentIdentifierClassNameVoterOptionalWMDTLP.create(Itrust(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, None)
 r = MockEmbeddingCreator(REQ_PREPROCESSOR, None, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR)
 c = MockEmbeddingCreator(CODE_PREPROCESSOR, None, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Itrust(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
 tlp.precalculate_for_callgraph_files(None, None, r, c, "_javadoc")
-"""
+""""""
 #EANCI ohne Methkomm
 r = MockEmbeddingCreator(REQ_PREPROCESSOR_IT, None, UCTokenizer(EANCI(), False), PREPROCESSED_REQ_OUTPUT_DIR)
 c = MockEmbeddingCreator(CODE_PREPROCESSOR_IT, None, JavaCodeASTTokenizer(EANCI(), JavaDocDescriptionOnlyTokenizer(EANCI(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
@@ -648,7 +699,7 @@ r = MockEmbeddingCreator(REQ_PREPROCESSOR_IT, None, WordTokenizer(SmosTrans(), F
 c = MockEmbeddingCreator(CODE_PREPROCESSOR_IT, None, JavaCodeASTTokenizer(SmosTrans(), JavaDocDescriptionOnlyTokenizer(SmosTrans(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
 tlp = FastTextCommentIdentifierClassNameVoterOptionalWMDTLP.create(SmosTrans(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, None)
 tlp.precalculate_for_callgraph_files(None, None, r, c, "_javadoc")
-"""
+
 # Etour ohne CG
 r = MockEmbeddingCreator(REQ_PREPROCESSOR, None, UCTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR)
 c = MockEmbeddingCreator(CODE_PREPROCESSOR, None, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
@@ -696,17 +747,17 @@ FastTextUCNameDescFlowCommentIdentifierSentenceSpecificClassNameVoterOptionalWMD
 FastTextUCNameDescFlowAllCommentSentenceSpecificIdentifierClassNameVoterOptionalWMDTLP
 FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP
 FastTextUCNameDescFlowCommentIdentifierSentenceSpecificNoClassNameVoterWMDTLP
-"""
-"""
+""""""
+
 def abc(w, clazz, dataset, o="_javadoc"):
     tlc = WeightedSimilaritySumCallElementLevelMajorityTLC(w, CallGraphTLC.NeighborStrategy.both)
-    tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+    tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min,  min, None)
     #tlp.build_precalculated_name_and_load(output_suffix=o)
     tlp.build_precalculated_name_and_load_callgraph_wmd(output_suffix=o)
     eval_strategy.set_trace_link_processor(tlp)
     eval_strategy.run(str(w))
     
-    tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, [1], [1], [1], False,  min, min, None)
+    tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, [1], [1], [1], False, min, min, None)
     tlp.build_precalculated_name_and_load_callgraph_wmd(output_suffix=o)
     eval_strateg2y = MeanAveragePrecision(1)
     eval_strateg2y.set_trace_link_processor(tlp)
@@ -727,6 +778,12 @@ def abc(w, clazz, dataset, o="_javadoc"):
 abc(None, FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP, Itrust())
 ####FastTextCommentIdentifierClassNameVoterOptionalWMDTLP
 #abc(0.9, FastTextUCNameDescFlowSentenceSpecificIdentifierClassNameVoterOptionalWMDTLP, Etour308())
+
+""""""
+Best                        FastTextUCNameDescFlowCommentIdentifierSentenceSpecificClassNameVoterOptionalWMDTLP / FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP
+Ohne MethCom                FastTextUCNameDescFlowSentenceSpecificIdentifierClassNameVoterOptionalWMDTLP / FastTextSentenceLevelIdentifierClassNameOptionalWMDTLP
+Ohne UC-Strukur, Satzweise  FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP
+Ohne UC-Struktur, Fliess    FastTextCommentIdentifierClassNameVoterOptionalWMDTLP
 
 
 for i in Util.get_range_array(0.5, 0.8, 0.1):
