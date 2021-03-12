@@ -6,7 +6,6 @@ from nltk.corpus import stopwords
 from pathlib import Path
 import FileUtil
 from TFIDFData import TFIDFData
-import it_core_news_lg
 
 log = logging.getLogger(__name__)
 CODE_STOPWORD_FILEPATH = Path(__file__).parent / "resources/CodeStopWords.txt"
@@ -68,18 +67,13 @@ class Lemmatizer(PreprocessingStep):
         self._italian = italian
         self._lemmatizer = None
         if italian:
-            #self._lemmatizer = SnowballStemmer("italian")
-            self._lemmatizer = it_core_news_lg.load(disable=["parser", "ner"])
+            self._lemmatizer = SnowballStemmer("italian")
         else:
             self._lemmatizer = WordNetLemmatizer()
         
     def execute(self, text_tokens, file_name, javadoc):
-
         if self._italian:
-            if isinstance(text_tokens, list):
-                text_tokens = " ".join(text_tokens)
-            doc = self._lemmatizer(text_tokens)
-            return [token.lemma_ for token in doc]
+            return [self._lemmatizer.stem(token) for token in text_tokens]
         return [self._lemmatizer.lemmatize(token) for token in text_tokens]
 
 class LowerCaseTransformer(PreprocessingStep):
