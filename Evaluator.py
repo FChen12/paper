@@ -20,7 +20,7 @@ def evaluate(trace_link_candidates, solution_trace_matrix: SolutionTraceMatrix, 
     if not trace_link_candidates:
         text = "No Trace Link candidates!"
         log.debug(text)
-        return None, None, None, None
+        return []
     valid_trace_links = []
     sol_matrix_copy = Util.deep_copy(solution_trace_matrix)
     false_positives_matrix = SolutionTraceMatrix()

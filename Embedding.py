@@ -130,10 +130,15 @@ class MethodCallGraphEmbedding(Embedding):
         self.methods_dict[method_dict_key] = vector
         self.add_method_sim(method_dict_key, similarity, req_name)
         
+    def get_non_cg_vector(self, dict_key):
+        if dict_key in self.non_cg_dict:
+            return self.non_cg_dict[dict_key]
+        log.info(f"No entry in non method dict with the key {dict_key}")
+        
     def get_non_cg_sim(self, dict_key):
         if dict_key in self.non_cg_sims_dict:
             return self.non_cg_sims_dict[dict_key]
-        log.info(f"No entry in non method dict with the key {dict_key}")
+        log.info(f"No entry in non method sims dict with the key {dict_key}")
         return None
         
     def add_non_cg_sim(self, dict_key, similarity, req_name):

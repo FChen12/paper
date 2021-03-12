@@ -89,7 +89,8 @@ class UCAverageWordEmbeddingCreator(RequirementEmbeddingCreator):
         if self._with_postcondition:
             partial_req_embeddings += self._embedd_and_average(file_representation.postcondition_words)
         if self._with_flow_of_events:
-            partial_req_embeddings += self._embedd_and_average(file_representation.flow_of_events_words)
+            for sentence_group in file_representation.flow_of_events_words:
+                partial_req_embeddings += self._embedd_and_average(sentence_group)
         if self._with_quality_req:
             partial_req_embeddings += self._embedd_and_average(file_representation.quality_requirement_words)
             

@@ -9,7 +9,7 @@ from WordEmbeddingCreator.WordEmbeddingCreator import FastTextEmbeddingCreator, 
 from RequirementEmbeddingCreator.RequirementEmbeddingCreator import AverageWordEmbeddingCreator, AverageBERTSentenceEmbeddingCreator
 import Evaluator
 from Embedding import RequirementEmbedding,\
-    MethodCallGraphEmbedding, Embedding
+    MethodCallGraphEmbedding, Embedding, MethodCallGraphEmbeddingMultipleSims
 from TraceLink import normalize_value_range
 from DataAdapter import EmbeddingsDataAdapter, \
     PrecalculatedTracePairProcessor,\
@@ -540,34 +540,44 @@ class MethodCallGraphTLP(TraceLinkProcessor, PrecalculatedEmbeddingsProcessor):
     def _other_trace_link_init(self):
         self._trace_link_creator.method_call_graph_dict = self._dataset.method_callgraph()
         
-    def precalculate_tracelinks(self, output_precalculated_req_filename, output_precalculated_code_filename, req_embedding_creator=None, code_embedding_creator=None):
+    def precalculate_tracelinks(self, output_precalculated_req_filename, output_precalculated_code_filename, req_embedding_creator=None, code_embedding_creator=None, output_suffix=""):
         if not req_embedding_creator:
             req_embedding_creator = self.default_req_emb_creator(self._word_emb_creator)
         if not code_embedding_creator:
             code_embedding_creator = self.default_code_emb_creator(self._word_emb_creator)
         if not output_precalculated_req_filename:
-            output_precalculated_req_filename = self.default_precalculated_filename(req_embedding_creator.__class__.__name__)
+            output_precalculated_req_filename = self.default_precalculated_filename(req_embedding_creator.__class__.__name__, output_suffix)
         if not output_precalculated_code_filename:
-            output_precalculated_code_filename = self.default_precalculated_filename(code_embedding_creator.__class__.__name__)
+            output_precalculated_code_filename = self.default_precalculated_filename(code_embedding_creator.__class__.__name__, output_suffix)
             
         req_embeddings = self._create_req_embeddings(req_embedding_creator)
         code_embeddings = self._create_code_embeddings(code_embedding_creator)
         
         for cg_emb in code_embeddings: 
-            assert isinstance(cg_emb, MethodCallGraphEmbedding)
+            assert isinstance(cg_emb, MethodCallGraphEmbeddingMultipleSims)
             for method_name_key in cg_emb.methods_dict:
                 for req_file in req_embeddings: 
                     assert isinstance(req_file, RequirementEmbedding)
-                    sim = Util.calculate_cos_sim(req_file.vector, cg_emb.get_method_vector(method_name_key))
-                    cg_emb.add_method_sim(method_name_key, sim, req_file.file_name)
+                    req_parts = self._choose_req_part(req_file) # choose if using partial vectors or whole vector
+                    sims_of_all_parts = [Util.calculate_cos_sim(req_vector, cg_emb.get_method_vector(method_name_key)) for req_vector in req_parts]
+                    cg_emb.add_method_sim(method_name_key, sims_of_all_parts, req_file.file_name)
+            for other_key in cg_emb.non_cg_dict:
+                for req_file in req_embeddings: 
+                    assert isinstance(req_file, RequirementEmbedding)
+                    req_parts = self._choose_req_part(req_file) # choose if using partial vectors or whole vector
+                    sims_of_all_parts = [Util.calculate_cos_sim(req_vector, cg_emb.get_non_cg_vector(other_key)) for req_vector in req_parts]
+                    cg_emb.add_non_cg_sim(other_key, sims_of_all_parts, req_file.file_name)
         
         FileUtil.write_dict_to_json(output_precalculated_req_filename, [req_emb.to_json() for req_emb in req_embeddings])
         FileUtil.write_dict_to_json(output_precalculated_code_filename, [code_emb.to_json() for code_emb in code_embeddings])
         
-        self.build_precalculated_name_and_load(req_embedding_creator.__class__.__name__, code_embedding_creator.__class__.__name__)
+        ######self.build_precalculated_name_and_load(req_embedding_creator.__class__.__name__, code_embedding_creator.__class__.__name__)
         
-    def default_precalculated_filename(self, emb_creator_name):
-        return precalculated_json_filename(self._dataset, emb_creator_name, emb_creator_name)
+    def _choose_req_part(self, req_file):
+        return req_file.sub_vectors
+    
+    def default_precalculated_filename(self, emb_creator_name, output_name_suffix=""):
+        return precalculated_json_filename(self._dataset, emb_creator_name, emb_creator_name + output_name_suffix)
     
     def load_from_precalculated(self, precalculated_req_filename, precalculated_code_filename):
         req_json = FileUtil.read_dict_from_json(precalculated_req_filename)
@@ -600,6 +610,9 @@ class MethodCallGraphTLP(TraceLinkProcessor, PrecalculatedEmbeddingsProcessor):
     def output_prefix(self):
         return type(self._trace_link_creator).__name__ + "." + self._code_emb_creator_name + "." + self._trace_link_creator.neighbor_strategy.name + "."+ str(self._trace_link_creator.method_weight)
     
+class MethodCallGraphTLPWholeReq(MethodCallGraphTLP):
+    def _choose_req_part(self, req_file):
+        return [req_file.vector]
     
 class RunConfiguration:
     FILE_THRESH_TEXT = "file_level_drop_thresh: "

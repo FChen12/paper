@@ -101,6 +101,9 @@ class FastTextFileLevelWMDTLP(FastTextWMDTLP):
         # elem thresh, maj thresh, req and code req func have no effect here
         return super(FastTextFileLevelWMDTLP, cls).create(dataset, word_emb_creator, trace_link_creator, [1], [1], file_level_drop_thresholds,
                                             normalize, None, None, rule_applier)
+        
+    
+    
     
 class FastTextIdentifierWMDTLP(FastTextFileLevelWMDTLP):
     """  WMD distance: Req as word list, Class as unordered method signature and class name list """
@@ -119,6 +122,9 @@ class FastTextIdentifierWMDTLP(FastTextFileLevelWMDTLP):
             for meth in cls.methods:
                 all_identifiers += meth.get_name_words() + meth.get_param_plain_list() + meth.get_returntype_words()
         return all_identifiers
+    
+    def cls_name_voter(self, m_dict):
+        return False
     
     def precalculate_tracelinks(self, output_precalculated_filename, req_embedding_creator=None, code_embedding_creator=None, output_name_suffix=""):
         if not req_embedding_creator:
@@ -141,7 +147,9 @@ class FastTextIdentifierWMDTLP(FastTextFileLevelWMDTLP):
         code_dict = dict()
         for code_emb in code_embeddings:
             all_identifiers = self._fill_code_dict(code_emb)
-            
+            class_name = code_emb.vector.classifiers[0].get_name_words()
+            if self.cls_name_voter(all_identifiers) and class_name:
+                all_identifiers = class_name
             if self._dataset.keys_with_extension():
                 code_dict[code_emb.file_name] = [all_identifiers]
             else:
@@ -193,6 +201,29 @@ class FastTextUCNameDescFlowIdentifierWMDTLP(FastTextIdentifierWMDTLP):
         else:
             req_dict[req_emb.file_name_without_extension] = [req_emb.vector.name_words + req_emb.vector.description_words + [word for group in req_emb.vector.flow_of_events_words for word in group]]
         return req_dict
+    
+    def output_prefix(self):
+        return "ft_UC_namedescflow_Identifier_wmd"
+    
+class FastTextCommentIdentifierFilelevelClassNameOptionalWMDTLP(FastTextIdentifierWMDTLP):
+    
+    def _fill_req_dict(self, req_dict, req_emb):
+        if self._dataset.keys_with_extension():
+            req_dict[req_emb.file_name] = [req_emb.vector.token_list]
+        else:
+            req_dict[req_emb.file_name_without_extension] = [req_emb.vector.token_list]
+        return req_dict
+    
+    def _fill_code_dict(self, code_emb):
+        all_identifiers = []
+        for cls in code_emb.vector.classifiers:
+            all_identifiers += cls.get_name_words()
+            for meth in cls.methods:
+                all_identifiers += meth.get_name_words() + meth.get_param_plain_list() + meth.get_returntype_words() + meth.get_comment_tokens()
+        return all_identifiers
+    
+    def cls_name_voter(self, m_dict):
+        return not m_dict
     
     def output_prefix(self):
         return "ft_UC_namedescflow_Identifier_wmd"
