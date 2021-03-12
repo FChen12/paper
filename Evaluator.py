@@ -88,8 +88,8 @@ def evaluateMAP(trace_link_candidates, k, dataset: Dataset, reverse_compare=Fals
     if len(trace_link_candidates) < dataset.num_original_links():
         # trace_link_candidates does not contain all possible link between reqs and code
         # -> Add missing links as dummy links with 0 similarity 
-        code_filenames = dataset.all_original_code_file_names(dataset.keys_with_extension())
-        req_filenames = dataset.all_original_req_file_names(dataset.keys_with_extension())
+        code_filenames = dataset.all_original_code_file_names(True)
+        req_filenames = dataset.all_original_req_file_names(True)
         for req_name in req_filenames:
             for code_name in code_filenames:
                 no_similarity = 1 if reverse_compare else 0
