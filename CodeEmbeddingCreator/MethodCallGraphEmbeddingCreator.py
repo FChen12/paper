@@ -1,6 +1,7 @@
 from CodeEmbeddingCreator.CodeEmbeddingCreator import CodeEmbeddingCreator
 import abc, Util
-from Embedding import MethodCallGraphEmbedding
+from Embedding import MethodCallGraphEmbedding,\
+    MethodCallGraphEmbeddingMultipleSims
 from Preprocessing.CallGraphUtil import build_method_param_dict_key
 
 """
@@ -21,8 +22,18 @@ class MethodCallGraphEmbeddingCreator(CodeEmbeddingCreator):
                 methods_dict[build_method_param_dict_key(method.get_original_name(),
                                                           method.get_original_param_type_list())] = method_vector
             if methods_dict:
-                code_embeddings.append(MethodCallGraphEmbedding(file_representation.file_path, classifier.get_original_name(),
+                code_embeddings.append(MethodCallGraphEmbeddingMultipleSims(file_representation.file_path, classifier.get_original_name(),
                                                              methods_dict))
+            elif classifier.get_name_words():
+                class_name_vectors = self._create_word_embeddings_from_word_list(classifier.get_name_words(), False)
+                if class_name_vectors:
+                    aggregated_cls_name_vector = Util.create_averaged_vector(class_name_vectors)
+                    
+                    meth_embedding = MethodCallGraphEmbeddingMultipleSims(file_representation.file_path, classifier.get_original_name(), {})
+                    meth_embedding.non_cg_dict = {MethodCallGraphEmbedding.CLASS_NAME_VOTER: aggregated_cls_name_vector}
+                    
+                    code_embeddings.append(meth_embedding)
+                
         return code_embeddings
                
                 
@@ -38,7 +49,7 @@ class MethodSignatureCallGraphEmbeddingCreator(MethodCallGraphEmbeddingCreator):
         method_words += method.get_name_words()
         method_words += method.get_returntype_words()
         method_words += method.get_param_plain_list()
-        return Util.create_averaged_vector(self._create_word_embeddings_from_word_list(method_words, self._is_ital_identifier))
+        return Util.create_averaged_vector(self._create_word_embeddings_from_word_list(method_words, False))
     
 class MethodCommentSignatureCallGraphEmbeddingCreator(MethodCallGraphEmbeddingCreator):
     
@@ -47,6 +58,6 @@ class MethodCommentSignatureCallGraphEmbeddingCreator(MethodCallGraphEmbeddingCr
         method_words += method.get_name_words()
         method_words += method.get_returntype_words()
         method_words += method.get_param_plain_list()
-        method_subvectors = self._create_word_embeddings_from_word_list(method_words, self._is_ital_identifier)
-        method_subvectors += self._create_word_embeddings_from_word_list(method.get_comment_tokens(), self._is_ital_comm)
+        method_words += method.get_comment_tokens()
+        method_subvectors = self._create_word_embeddings_from_word_list(method_words, False)
         return Util.create_averaged_vector(method_subvectors)
