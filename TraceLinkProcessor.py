@@ -586,7 +586,7 @@ class MethodCallGraphTLP(TraceLinkProcessor, PrecalculatedEmbeddingsProcessor):
         code_embeddings = [MethodCallGraphEmbedding.from_json(code_dict) for code_dict in code_json]
         self._data_adapter = EmbeddingsDataAdapter(req_embeddings, code_embeddings)
         
-    def build_precalculated_name_and_load(self, req_emb_creator_name="", code_emb_creator_name="", dataset=None):
+    def build_precalculated_name_and_load(self, req_emb_creator_name="", code_emb_creator_name="", dataset=None, output_suffix=""):
         """
         req_emb_creator_name = class name of the req_emb_creator
         code_emb_creator_name = class name of the code_emb_creator
@@ -597,14 +597,14 @@ class MethodCallGraphTLP(TraceLinkProcessor, PrecalculatedEmbeddingsProcessor):
             code_emb_creator_name = self.DEFAULT_CODE_EMB_CREATOR_NAME
         self._req_emb_creator_name = req_emb_creator_name
         self._code_emb_creator_name = code_emb_creator_name
-        self.reload_with_dataset(dataset)
+        self.reload_with_dataset(dataset, output_suffix)
     
-    def reload_with_dataset(self, dataset):
+    def reload_with_dataset(self, dataset, output_suffix=""):
         if dataset:
             self._dataset = dataset
             self._run_config.reload_dataset(dataset, isinstance(self._trace_link_creator, TopNTraceLinkCreator))
-        precalculated_req_filename = self.default_precalculated_filename(self._req_emb_creator_name)
-        precalculated_code_filename = self.default_precalculated_filename(self._code_emb_creator_name)
+        precalculated_req_filename = self.default_precalculated_filename(self._req_emb_creator_name, output_suffix)
+        precalculated_code_filename = self.default_precalculated_filename(self._code_emb_creator_name, output_suffix)
         self.load_from_precalculated(precalculated_req_filename, precalculated_code_filename)
         
     def output_prefix(self):
