@@ -107,6 +107,14 @@ class Lemmatizer(PreprocessingStep):
         word_to_lemma_dataframe = pandas.DataFrame.from_dict(word_to_lemma_map, orient="index", columns=[cls.COLUMN_LEMMA])
         FileUtil.write_dataframe_to_csv(word_to_lemma_dataframe, Paths.PRECALCULATED_SPACY_ITALIAN_LEMMA_CSV)
 
+"""
+req_tokenizer = WordTokenizer(EANCI(), True)
+req_pre = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER])
+code_tokenizer = JavaCodeASTTokenizer(EANCI(), WordTokenizer(EANCI(), True))
+code_pre = Preprocessor([URL, SEP, LETTER, CAMEL, JAVASTOP, LOWER])
+dataset_tuple = [(EANCI(), code_pre, code_tokenizer, req_pre, req_tokenizer)]
+
+"""
 class LowerCaseTransformer(PreprocessingStep):
     
     def execute(self, text_tokens: [str], file_name, javadoc):
