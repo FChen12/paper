@@ -9,6 +9,7 @@ DATASETS = ROOT / "datasets"
 OUTPUT_DIR = ROOT / "output"
 LABELED_FOLDER = DATASETS / "labeled"
 
+PRECALCULATED_SPACY_ITALIAN_LEMMA_CSV = ROOT / "Preprocessing/resources/precalculated_spacy_italian_lemmas.csv"
 PREPROCESSED_CODE_OUTPUT_DIR = OUTPUT_DIR / "Preprocessed_Code"
 PREPROCESSED_REQ_OUTPUT_DIR = OUTPUT_DIR / "Preprocessed_Req"
 

@@ -11,7 +11,14 @@ class CodeFileRepresentation(FileRepresentation):
     def __init__(self, classifiers, file_path):
         self.classifiers = classifiers
         super(CodeFileRepresentation, self).__init__(file_path)
+        self.token_list = self._create_token_list() # List of all tokens / word in the code file representatio
                 
+    def _create_token_list(self):
+        all_tokens = []
+        for classifier in self.classifiers:
+            all_tokens += classifier.token_list
+        return all_tokens
+    
     def preprocess(self, preprocessor):
         for cls in self.classifiers:
             cls.preprocess(preprocessor)
@@ -137,7 +144,11 @@ class Method(Preprocessable):
         self.body = body
         self.left_side_identifiers = left_side_identifiers
         self.line = line # The line number in the code file where the method signature is written
-
+        self.token_list = self._create_token_list()
+    
+    def _create_token_list(self):
+        return self.get_name_words() + self.get_param_plain_list() + self.get_returntype_words() + self.get_comment_tokens() + self.get_body_words()
+    
     def set_params(self, param_list):
         self.parameters = param_list
         self.original_parameters = Util.deep_copy(param_list)
@@ -259,7 +270,11 @@ class Attribute(Preprocessable):
         self.init_value = init_value
         self.comment = comment
         self.line = line
+        self.token_list = self._create_token_list()
     
+    def _create_token_list(self):
+        return self.get_attribute_plain_list() + self.get_comment_tokens()
+        
     def get_attribute_tuple(self) -> ([str], [str], [str], [str]):
         """
         Returns the attribute type, name and comment tokens as tuple:
@@ -309,6 +324,20 @@ class Classifier(Preprocessable):
         self.comment = comment
         self.inner_classifiers = inner_classifiers
         self.line = line
+        self.token_list = self._create_token_list()
+        
+    def _create_token_list(self):
+        all_tokens = []
+        all_tokens += self.get_name_words()
+        all_tokens += self.get_super_classifiers_plain_list()
+        all_tokens += self.get_comment_tokens()
+        for attr in self.attributes:
+            all_tokens += attr.token_list
+        for meth in self.methods:
+            all_tokens += meth.token_list
+        for inner_cls in self.inner_classifiers:
+            all_tokens += inner_cls.token_list
+        return all_tokens
         
     def get_super_classifiers(self) -> [[str]]:
         """
@@ -456,6 +485,11 @@ class Enum_(Classifier):
         super(Enum_, self).__init__(name, comment, attributes, methods, [], extended_classifiers, implemented_classifiers, line)
         self.constants = constants
         
+    def _create_token_list(self):
+        all_tokens = super(Enum_, self)._create_token_list()
+        all_tokens += self.get_constant_words()
+        return all_tokens
+    
     def get_constant_words(self) -> [str]:
         constant_words = []
         for c in self.constants:

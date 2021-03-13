@@ -6,7 +6,10 @@ from nltk.corpus import stopwords
 from pathlib import Path
 import FileUtil
 from TFIDFData import TFIDFData
-
+import it_core_news_lg
+import Paths
+from Dataset import Dataset
+import pandas
 log = logging.getLogger(__name__)
 CODE_STOPWORD_FILEPATH = Path(__file__).parent / "resources/CodeStopWords.txt"
 ITAL_CODE_STOPWORD_FILEPATH = Path(__file__).parent / "resources/ItalianCodeStopWords.txt"
@@ -62,19 +65,47 @@ class CamelCaseSplitter(PreprocessingStep):
                 result_list.extend(re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', token)).split())
         return result_list
 class Lemmatizer(PreprocessingStep):
-    
+    COLUMN_LEMMA = "lemma"
     def __init__(self, italian=False):
         self._italian = italian
         self._lemmatizer = None
         if italian:
-            self._lemmatizer = SnowballStemmer("italian")
+            #self._lemmatizer = SnowballStemmer("italian")
+            self._lemmatizer = FileUtil.read_csv_to_dataframe(Paths.PRECALCULATED_SPACY_ITALIAN_LEMMA_CSV)
         else:
             self._lemmatizer = WordNetLemmatizer()
         
     def execute(self, text_tokens, file_name, javadoc):
         if self._italian:
-            return [self._lemmatizer.stem(token) for token in text_tokens]
+            return [self._lemmatizer.at[token, self.COLUMN_LEMMA] if token in self._lemmatizer.index else token for token in text_tokens]
         return [self._lemmatizer.lemmatize(token) for token in text_tokens]
+    
+    @classmethod
+    def precalculate_spacy_italian_lemmatizer(cls, dataset_tuple):
+        lemmatizer = it_core_news_lg.load(disable=['ner', 'parser']) # we only need the lemmatizer component, disable the other
+        word_to_lemma_map = {}
+        
+        def iterate_files(tokenizer, preprecessor, folder):
+            for file in FileUtil.get_files_in_directory(folder, True):
+                file_representation = tokenizer.tokenize(file)
+                file_representation.preprocess(preprecessor)
+                for word in file_representation.token_list:
+                    lemma = [token.lemma_ for token in lemmatizer(word)]
+                    if len(lemma) > 1:
+                        log.info(f"More than one lemma {lemma} for \"{word}\". Using \"{''.join(lemma)}\" as lemma")
+                    lemma = "".join(lemma)
+                    if word in word_to_lemma_map:
+                        if not word_to_lemma_map[word] == lemma:
+                            log.info(f"Different Duplicate Lemma for {word}: {word_to_lemma_dataframe[word]} <-> {lemma}")
+                    else:
+                        word_to_lemma_map[word] = lemma
+        for dataset, code_pre, code_tok, req_pre, req_tok in dataset_tuple:
+            
+            iterate_files(req_tok, req_pre, dataset.req_folder())
+            iterate_files(code_tok, code_pre, dataset.code_folder())
+        
+        word_to_lemma_dataframe = pandas.DataFrame.from_dict(word_to_lemma_map, orient="index", columns=[cls.COLUMN_LEMMA])
+        FileUtil.write_dataframe_to_csv(word_to_lemma_dataframe, Paths.PRECALCULATED_SPACY_ITALIAN_LEMMA_CSV)
 
 class LowerCaseTransformer(PreprocessingStep):
     

@@ -1,6 +1,4 @@
 import Paths, abc
-import FileUtil
-from torch.utils.hipify.hipify_python import preprocessor
 from Preprocessing.FileRepresentation import UseCaseFileRepresentation
 from Preprocessing.CodeFileRepresentation import CodeFileRepresentation
 import pandas
