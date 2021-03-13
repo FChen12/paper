@@ -175,7 +175,7 @@ class CallGraphTLC(MajorityTraceLinkCreator):
     def get_votes_from_code_entries(self, code_file, req_reduce_func, elem_level_drop_thresh, maj_drop_thresh):
         link_dict = ReqLinkRegister() # {req_filename: (req_emb, [sim1, sim2, ...])}
         vote_array = [] # contains the votes (requirement file names)
-        assert isinstance(code_file, MethodCallGraphEmbedding)
+        assert isinstance(code_file, MethodCallGraphEmbedding), type(code_file)
         for method_name_key in code_file.methods_dict:
             # method_vote_array: contains the votes ( == requirement file names)
             # method_link_dict: {req_filename: (req_emb, [sim1, sim2, ...])}

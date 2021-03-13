@@ -70,7 +70,7 @@ def run_fasttext_filelevel_cos_sim(dataset, eval_strategy, req_emb_creator, code
     """
     log.info("\n#####  FastText file level cos sim on {}: \n######################################".format(dataset.name()))
     log.info(type(req_emb_creator).__name__ +  "/" + type(code_emb_creator).__name__ +  ": ")
-    f = FastTextFileLevelTLP.create(dataset, WORD_EMBD_CREATOR, FileLevelCosSimTraceLinkCreator(), DROP_THRESHOLDS, normalize)
+    f = FastTextFileLevelTLP.create(dataset, WORD_EMBD_CREATOR, FileLevelCosSimTraceLinkCreator(), DROP_THRESHOLDS, normalize, None)
     f.load_from_embeddings(req_emb_creator, code_emb_creator)
     eval_strategy.set_trace_link_processor(f)
     eval_strategy.run(output_filename_suffix)
@@ -588,18 +588,61 @@ eval_strategy = WritePrecRecallF1Excel()
 eval_strategy.set_trace_link_processor(tlp)
 eval_strategy.run()
 
-
-DROP_THRESHOLDS = Util.get_range_array(0.4, 0.45, 0.01)
-MAJORITY_THRESHOLDS = Util.get_range_array(0.53, 0.56, 0.01)
-ELEM_THRESHOLDS = [1]#Util.get_range_array(0.67, 0.69, 0.01)
+"""
+DROP_THRESHOLDS = Util.get_range_array(0.3, 0.8, 0.01)
+MAJORITY_THRESHOLDS = [0]#Util.get_range_array(0.54, 0.57, 0.01)
+ELEM_THRESHOLDS = [0]#Util.get_range_array(0.67, 0.69, 0.01)
 ###eval_strategy = MeanAveragePrecision(1)
 eval_strategy = WritePrecRecallF1Excel()
-"""
+
 w = 0.88
 CODE_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, JAVASTOP, LOWER, LEMMA, STOP, WordLengthFilter(2)])
 REQ_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER, LEMMA, STOP, WordLengthFilter(2)])
 tlc = WeightedSimilaritySumCallElementLevelMajorityTLC(w, CallGraphTLC.NeighborStrategy.both)
+run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
 
+run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+DROP_THRESHOLDS = [0]
+eval_strategy = MeanAveragePrecision(1)
+run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+eval_strategy = MeanAveragePrecision(2)
+run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+eval_strategy = MeanAveragePrecision(3)
+run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+eval_strategy = MeanAveragePrecision(None)
+run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+
+eval_strategy = MeanAveragePrecision(1)
+run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+eval_strategy = MeanAveragePrecision(2)
+run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+eval_strategy = MeanAveragePrecision(3)
+run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+eval_strategy = MeanAveragePrecision(None)
+run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+
+
+"""
 #Itrust Filelevel
 tlp = FastTextCommentIdentifierFilelevelClassNameOptionalWMDTLP.create(Itrust(), WORD_EMBD_CREATOR, tlc, DROP_THRESHOLDS, False, None)
 r = MockEmbeddingCreator(REQ_PREPROCESSOR, None, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR)
@@ -656,7 +699,7 @@ r = AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokeniz
 c = MethodCommentSignatureCallGraphEmbeddingCreator(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Itrust(), False)), PREPROCESSED_CODE_OUTPUT_DIR) 
 tlp.precalculate_tracelinks(None, None, r, c, "_javadoc")
 
-"""
+
 #Itrust ohne UC Struktur, Fliestext
 tlp = FastTextCommentIdentifierClassNameVoterOptionalWMDTLP.create(Itrust(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, None)
 r = MockEmbeddingCreator(REQ_PREPROCESSOR, None, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR)
@@ -747,18 +790,19 @@ FastTextUCNameDescFlowCommentIdentifierSentenceSpecificClassNameVoterOptionalWMD
 FastTextUCNameDescFlowAllCommentSentenceSpecificIdentifierClassNameVoterOptionalWMDTLP
 FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP
 FastTextUCNameDescFlowCommentIdentifierSentenceSpecificNoClassNameVoterWMDTLP
-""""""
-
-def abc(w, clazz, dataset, o="_javadoc"):
+"""
+"""
+def abc(w, clazz, dataset, r, c, o="_javadoc"):
     tlc = WeightedSimilaritySumCallElementLevelMajorityTLC(w, CallGraphTLC.NeighborStrategy.both)
-    tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min,  min, None)
-    #tlp.build_precalculated_name_and_load(output_suffix=o)
-    tlp.build_precalculated_name_and_load_callgraph_wmd(output_suffix=o)
+    #tlc = FileLevelCosSimTraceLinkCreator()
+    tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, max, max, None)
+    #tlp.build_precalculated_name_and_load_callgraph_wmd(dataset, output_suffix=o)
+    tlp.build_precalculated_name_and_load(r, c, dataset, output_suffix=o)
     eval_strategy.set_trace_link_processor(tlp)
     eval_strategy.run(str(w))
     
-    tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, [1], [1], [1], False, min, min, None)
-    tlp.build_precalculated_name_and_load_callgraph_wmd(output_suffix=o)
+    tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, [0], [0], [0], False, max, max, None)
+    tlp.build_precalculated_name_and_load(r, c, dataset, output_suffix=o)
     eval_strateg2y = MeanAveragePrecision(1)
     eval_strateg2y.set_trace_link_processor(tlp)
     eval_strateg2y.run(str(w))
@@ -774,12 +818,12 @@ def abc(w, clazz, dataset, o="_javadoc"):
     eval_strateg2y = MeanAveragePrecision(None)
     eval_strateg2y.set_trace_link_processor(tlp)
     eval_strateg2y.run(str(w))
-    
-abc(None, FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP, Itrust())
+    """
+#abc(0.9, MethodCallGraphTLPWholeReq, Itrust(), "AverageWordEmbeddingCreator", "MethodCommentSignatureCallGraphEmbeddingCreator")
 ####FastTextCommentIdentifierClassNameVoterOptionalWMDTLP
 #abc(0.9, FastTextUCNameDescFlowSentenceSpecificIdentifierClassNameVoterOptionalWMDTLP, Etour308())
 
-""""""
+"""
 Best                        FastTextUCNameDescFlowCommentIdentifierSentenceSpecificClassNameVoterOptionalWMDTLP / FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP
 Ohne MethCom                FastTextUCNameDescFlowSentenceSpecificIdentifierClassNameVoterOptionalWMDTLP / FastTextSentenceLevelIdentifierClassNameOptionalWMDTLP
 Ohne UC-Strukur, Satzweise  FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP
