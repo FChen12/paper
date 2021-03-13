@@ -599,62 +599,49 @@ w = 0.88
 CODE_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, JAVASTOP, LOWER, LEMMA, STOP, WordLengthFilter(2)])
 REQ_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER, LEMMA, STOP, WordLengthFilter(2)])
 
-req_tokenizer = WordTokenizer(EANCI(), True)
-req_pre = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER])
-code_tokenizer = JavaCodeASTTokenizer(EANCI(), WordTokenizer(EANCI(), True))
-code_pre = Preprocessor([URL, SEP, LETTER, CAMEL, JAVASTOP, LOWER])
-dataset_tuple = [(EANCI(), code_pre, code_tokenizer, req_pre, req_tokenizer)]
-
-req_tokenizer = WordTokenizer(SmosTrans(), True)
-code_tokenizer = JavaCodeASTTokenizer(SmosTrans(), WordTokenizer(SmosTrans(), True))
-dataset_tuple.append((SmosTrans(), code_pre, code_tokenizer, req_pre, req_tokenizer))
-
-Lemmatizer.precalculate_spacy_italian_lemmatizer(dataset_tuple)
-#print(LEMMA_IT.execute(["asdacsd", "possiede"], None, None))
-"""
 tlc = WeightedSimilaritySumCallElementLevelMajorityTLC(w, CallGraphTLC.NeighborStrategy.both)
-run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(SmosTrans(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(SmosTrans(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(SmosTrans(), JavaDocDescriptionOnlyTokenizer(SmosTrans(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 
-run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(EANCI(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(EANCI(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(EANCI(), JavaDocDescriptionOnlyTokenizer(EANCI(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 DROP_THRESHOLDS = [0]
 eval_strategy = MeanAveragePrecision(1)
-run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(EANCI(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(EANCI(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(EANCI(), JavaDocDescriptionOnlyTokenizer(EANCI(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 eval_strategy = MeanAveragePrecision(2)
-run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(EANCI(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(EANCI(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(EANCI(), JavaDocDescriptionOnlyTokenizer(EANCI(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 eval_strategy = MeanAveragePrecision(3)
-run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(EANCI(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(EANCI(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(EANCI(), JavaDocDescriptionOnlyTokenizer(EANCI(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 eval_strategy = MeanAveragePrecision(None)
-run_fasttext_filelevel_cos_sim(Etour308(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Etour308(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Etour308(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(EANCI(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(EANCI(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(EANCI(), JavaDocDescriptionOnlyTokenizer(EANCI(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 
 eval_strategy = MeanAveragePrecision(1)
-run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(SmosTrans(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(SmosTrans(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(SmosTrans(), JavaDocDescriptionOnlyTokenizer(SmosTrans(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 eval_strategy = MeanAveragePrecision(2)
-run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(SmosTrans(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(SmosTrans(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(SmosTrans(), JavaDocDescriptionOnlyTokenizer(SmosTrans(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 eval_strategy = MeanAveragePrecision(3)
-run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
+run_fasttext_filelevel_cos_sim(SmosTrans(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(SmosTrans(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(SmosTrans(), JavaDocDescriptionOnlyTokenizer(SmosTrans(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
 eval_strategy = MeanAveragePrecision(None)
-run_fasttext_filelevel_cos_sim(Itrust(), eval_strategy, 
-                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR, WORD_EMBD_CREATOR, WordTokenizer(Itrust(), False), PREPROCESSED_REQ_OUTPUT_DIR),
-                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(Itrust(), JavaDocDescriptionOnlyTokenizer(Etour308(), False)), PREPROCESSED_CODE_OUTPUT_DIR))
-
+run_fasttext_filelevel_cos_sim(SmosTrans(), eval_strategy, 
+                            AverageWordEmbeddingCreator(REQ_PREPROCESSOR_IT, WORD_EMBD_CREATOR, WordTokenizer(SmosTrans(), True), PREPROCESSED_REQ_OUTPUT_DIR),
+                             IdentifierEmbeddingCreatorWithMethodCommentToClass(CODE_PREPROCESSOR_IT, WORD_EMBD_CREATOR, JavaCodeASTTokenizer(SmosTrans(), JavaDocDescriptionOnlyTokenizer(SmosTrans(), True)), PREPROCESSED_CODE_OUTPUT_DIR))
+"""
 """
 """
 #Itrust Filelevel
