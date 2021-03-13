@@ -1,6 +1,10 @@
 precalculated*
 __pycache__/
 output/
+
+!precalculated_spacy_italian_lemmas.csv
+
+
 *.bak
 
 # SVN
