@@ -482,8 +482,9 @@ class Classifier(Preprocessable):
 class Enum_(Classifier):
     def __init__(self, name: IdentifierString, comment: IdentifierString, attributes: [Attribute]=[], 
                  methods: [Method]=[], constants=[], extended_classifiers = [], implemented_classifiers = [], line=None):
-        super(Enum_, self).__init__(name, comment, attributes, methods, [], extended_classifiers, implemented_classifiers, line)
         self.constants = constants
+        super(Enum_, self).__init__(name, comment, attributes, methods, [], extended_classifiers, implemented_classifiers, line)
+        
         
     def _create_token_list(self):
         all_tokens = super(Enum_, self)._create_token_list()
