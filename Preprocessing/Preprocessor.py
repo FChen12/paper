@@ -6,8 +6,9 @@ from nltk.corpus import stopwords
 from pathlib import Path
 import FileUtil
 from TFIDFData import TFIDFData
-import it_core_news_lg
+import it_core_news_lg, en_core_web_trf
 import Paths
+from enum import Enum
 from Dataset import Dataset
 import pandas
 log = logging.getLogger(__name__)
@@ -66,23 +67,39 @@ class CamelCaseSplitter(PreprocessingStep):
         return result_list
 class Lemmatizer(PreprocessingStep):
     COLUMN_LEMMA = "lemma"
-    def __init__(self, italian=False):
-        self._italian = italian
+    
+    class LemmatizerType(Enum):
+        english_nltk = 1
+        english_spacy = 2
+        italian_nltk = 3 # is a stemmer, nltk does not have an italian lemmatizer
+        italian_spacy = 4
+        
+    def __init__(self, lemmatizer_type=LemmatizerType.english_nltk):
+        self._lemmatizer_type = lemmatizer_type
         self._lemmatizer = None
-        if italian:
-            #self._lemmatizer = SnowballStemmer("italian")
+        if lemmatizer_type == self.LemmatizerType.english_nltk:
+            self._lemmatizer = WordNetLemmatizer()
+        elif lemmatizer_type == self.LemmatizerType.english_spacy:
+            # Use precalculated files for spacy since google colab can't handle fasttext model and spacy lemmatizer at once
+            self._lemmatizer = FileUtil.read_csv_to_dataframe(Paths.PRECALCULATED_SPACY_ENGLISH_LEMMA_CSV)
+        elif lemmatizer_type == self.LemmatizerType.italian_nltk:
+            self._lemmatizer = SnowballStemmer("italian")
+        elif lemmatizer_type == self.LemmatizerType.italian_spacy:
+            # Use precalculated files for spacy since google colab can't handle fasttext model and spacy lemmatizer at once
             self._lemmatizer = FileUtil.read_csv_to_dataframe(Paths.PRECALCULATED_SPACY_ITALIAN_LEMMA_CSV)
         else:
-            self._lemmatizer = WordNetLemmatizer()
+            log.error(f"Unknown case for LemmatizerType: {lemmatizer_type}")
         
     def execute(self, text_tokens, file_name, javadoc):
-        if self._italian:
+        if self._lemmatizer_type == self.LemmatizerType.english_nltk:
+            return [self._lemmatizer.lemmatize(token) for token in text_tokens]
+        elif self._lemmatizer_type == self.LemmatizerType.english_spacy or self._lemmatizer_type == self.LemmatizerType.italian_spacy:
             return [self._lemmatizer.at[token, self.COLUMN_LEMMA] if token in self._lemmatizer.index else token for token in text_tokens]
-        return [self._lemmatizer.lemmatize(token) for token in text_tokens]
-    
+        if self._lemmatizer_type == self.LemmatizerType.italian_nltk:
+            return [self._lemmatizer.stem(token) for token in text_tokens]
+            
     @classmethod
-    def precalculate_spacy_italian_lemmatizer(cls, dataset_tuple):
-        lemmatizer = it_core_news_lg.load(disable=['ner', 'parser']) # we only need the lemmatizer component, disable the other
+    def _precalculate_spacy_lemmatizer(cls, spacy_lemmatizer, dataset_tuple, output_path):
         word_to_lemma_map = {}
         
         def iterate_files(tokenizer, preprecessor, folder):
@@ -90,7 +107,7 @@ class Lemmatizer(PreprocessingStep):
                 file_representation = tokenizer.tokenize(file)
                 file_representation.preprocess(preprecessor)
                 for word in file_representation.token_list:
-                    lemma = [token.lemma_ for token in lemmatizer(word)]
+                    lemma = [token.lemma_ for token in spacy_lemmatizer(word)]
                     if len(lemma) > 1:
                         log.info(f"More than one lemma {lemma} for \"{word}\". Using \"{''.join(lemma)}\" as lemma")
                     lemma = "".join(lemma)
@@ -105,7 +122,16 @@ class Lemmatizer(PreprocessingStep):
             iterate_files(code_tok, code_pre, dataset.code_folder())
         
         word_to_lemma_dataframe = pandas.DataFrame.from_dict(word_to_lemma_map, orient="index", columns=[cls.COLUMN_LEMMA])
-        FileUtil.write_dataframe_to_csv(word_to_lemma_dataframe, Paths.PRECALCULATED_SPACY_ITALIAN_LEMMA_CSV)
+        FileUtil.write_dataframe_to_csv(word_to_lemma_dataframe, output_path)
+
+    @classmethod
+    def precalculate_spacy_english_lemmatizer(cls, dataset_tuple):
+        cls._precalculate_spacy_lemmatizer(en_core_web_trf.load(disable=['ner', 'parser']), dataset_tuple, Paths.PRECALCULATED_SPACY_ENGLISH_LEMMA_CSV) # we only need the lemmatizer component, disable the other
+        
+    @classmethod
+    def precalculate_spacy_italian_lemmatizer(cls, dataset_tuple):
+        cls._precalculate_spacy_lemmatizer(it_core_news_lg.load(disable=['ner', 'parser']), dataset_tuple, Paths.PRECALCULATED_SPACY_ITALIAN_LEMMA_CSV)
+        
 
 """
 req_tokenizer = WordTokenizer(EANCI(), True)
