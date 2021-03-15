@@ -26,6 +26,7 @@ from EvalMatrix import EvalMatrix
 from Dataset import Dataset
 log = logging.getLogger(__name__)
 
+
 DEFAULT_REQ_PREPROCESSOR = Preprocessor([UrlRemover(), Separator(), NonLetterFilter(), 
         CamelCaseSplitter(), LowerCaseTransformer(), Lemmatizer(), StopWordRemover(), WordLengthFilter(2)])
 

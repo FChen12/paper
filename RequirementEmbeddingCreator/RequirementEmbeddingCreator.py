@@ -215,7 +215,8 @@ class UCTFIDFWordEmbeddingCreatorWithNameDescFlow(UCTFIDFWordEmbeddingCreator):
                                          wordemb_creator=wordemb_creator, preprocessed_token_output_directory=preprocessed_token_output_directory)
         self._with_description = True
         self._with_flow_of_events = True
-          
+  
+"""        
 CAMEL = CamelCaseSplitter()
 LOWER = LowerCaseTransformer()
 LETTER = NonLetterFilter()
@@ -225,7 +226,7 @@ STOP = StopWordRemover()
 LEMMA = Lemmatizer()
 W_LENGTH = WordLengthFilter(2)
 REQ_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER, LEMMA, STOP, W_LENGTH])
-
+"""
 #UCTFIDFWordEmbeddingCreator(UCTokenizer(), REQ_PREPROCESSOR).precalculate_weights(Etour308())
 #UCTFIDFWordEmbeddingCreatorWithNameDesc(UCTokenizer(), None, REQ_PREPROCESSOR).precalculate_weights(Etour308())
 #UCTFIDFWordEmbeddingCreatorWithNameDescFlow(UCTokenizer(), None, REQ_PREPROCESSOR).precalculate_weights(Etour308())

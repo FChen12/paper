@@ -94,7 +94,7 @@ class RodriguezCodeChooser(WordChooser):
                 chosen_words += method.get_left_side_identifier_words()
         return chosen_words
     
-    
+"""    
 CAMEL = CamelCaseSplitter()
 LOWER = LowerCaseTransformer()
 LETTER = NonLetterFilter()
@@ -103,11 +103,11 @@ SEP = Separator()
 JAVASTOP = JavaCodeStopWordRemover()
 STOP_IT = StopWordRemover(True) # Italian stop word remover
 STOP = StopWordRemover()
-LEMMA_IT = Lemmatizer(True) # Italian lemmatizer
+LEMMA_IT = Lemmatizer(Lemmatizer.LemmatizerType.italian_spacy) # Italian lemmatizer
 LEMMA = Lemmatizer()
 W_LENGTH = WordLengthFilter(2)
 
 CODE_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER, JAVASTOP, LEMMA, STOP, W_LENGTH])
 REQ_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, LOWER, LEMMA, STOP, W_LENGTH])
-
+"""
 #calculate_jaccard(Etour308(), UCNameDescFlowChooser(UCTokenizer(Etour308()), REQ_PREPROCESSOR), RodriguezCodeChooser(JavaCodeASTTokenizer(), CODE_PREPROCESSOR))

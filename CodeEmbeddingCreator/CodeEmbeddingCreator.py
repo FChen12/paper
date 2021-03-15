@@ -737,7 +737,8 @@ class TFIDFIdentifierEmbeddingCreatorWithMethodComment(TFIDFIdentifierEmbeddingC
         self._with_method = True
         self._with_method_comment_to_method = True
         self._with_class_name_to_method = True
-        
+ 
+"""       
 CAMEL = CamelCaseSplitter()
 LOWER = LowerCaseTransformer()
 LETTER = NonLetterFilter()
@@ -748,6 +749,6 @@ STOP = StopWordRemover()
 LEMMA = Lemmatizer()
 W_LENGTH = WordLengthFilter(2) # Remove everthing that is smaller equal length 2
 CODE_PREPROCESSOR = Preprocessor([URL, SEP, LETTER, CAMEL, JAVASTOP, LOWER, LEMMA, STOP, W_LENGTH])
-
+"""
 #TFIDFIdentifierEmbeddingCreator(None, CODE_PREPROCESSOR).precalculate_weights(Etour308())
 #TFIDFIdentifierEmbeddingCreatorWithMethodComment(None, CODE_PREPROCESSOR).precalculate_weights(Etour308())
