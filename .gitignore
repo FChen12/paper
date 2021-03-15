@@ -3,7 +3,7 @@ __pycache__/
 output/
 
 !precalculated_spacy_italian_lemmas.csv
-
+!precalculated_spacy_english_lemmas.csv
 
 *.bak
 
