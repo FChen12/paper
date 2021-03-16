@@ -163,7 +163,7 @@ class MeanAveragePrecision(EvalStrategy):
             all_links = eval_result_matrix.all_trace_links(e_thresh, m_thresh, f_thresh)
             map, num_distinct_links = Evaluator.evaluateMAP(all_links, self.k, self._trace_link_processor._dataset, 
                                         self._trace_link_processor._run_config.reverse_compare)
-            log.info(f"Mean Average Precision @ {self.k}: {map} with {num_distinct_links} distinct links")
+            log.info(f"MAP @ {self.k}: {map}")
             
         else: 
             log.info(f"No trace links for Mean Average Precision")
