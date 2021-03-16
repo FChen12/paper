@@ -73,8 +73,10 @@ class WritePrecRecallF1Excel(EvalStrategy):
                         next_row.append(print_str)
                 excel_array.append(next_row)
             excel_array.append([""])
+        best_thresh_cell_str = ""
         if best_f1 > 0:
-            best_f1_str = "Best f1: {} at e{} m{} f{}".format(best_f1, best_elem_thresh, self._run_config.majority_print[best_maj_thresh], best_file_thresh)
+            best_tresh_str = f"e{best_elem_thresh} m{self._run_config.majority_print[best_maj_thresh]} f{best_file_thresh}"
+            best_f1_str = f"Best f1: {best_f1} at " + best_tresh_str
             excel_array.append([best_f1_str])
             
             # if possible, append a 3x3 matrix with file level/maj thresh as columns/rows where the center cell contains the best f1 value
@@ -102,12 +104,20 @@ class WritePrecRecallF1Excel(EvalStrategy):
             
             excel_array.append([f"elem_level_drop_thresh: {best_elem_thresh}"] + [f"file_level_drop_thresh: {dt}" for dt in best_f_tresh_limits])
             for m_thr_limit in best_m_tresh_limits:
-                excel_array.append([f"majority_drop_thresh: {m_thr_limit}"] + [eval_result_matrix.print_str(best_elem_thresh, m_thr_limit, f_thresh) for f_thresh in best_f_tresh_limits])
+                next_excel_row = [f"majority_drop_thresh: {m_thr_limit}"]
+                for f_thresh in best_f_tresh_limits:
+                    if m_thr_limit == best_maj_thresh and f_thresh == best_file_thresh:
+                        best_thresh_cell_str = best_tresh_str + "\n" + eval_result_matrix.print_str(best_elem_thresh, m_thr_limit, f_thresh)
+                        next_excel_row.append(best_thresh_cell_str)
+                    else:
+                        next_excel_row.append(eval_result_matrix.print_str(best_elem_thresh, m_thr_limit, f_thresh))
+                excel_array.append(next_excel_row)
+
         else:
             best_f1_str = "No trace links"
             excel_array.append([best_f1_str])
         
-        log.info(best_f1_str)
+        log.info(best_f1_str + "\n" + best_thresh_cell_str)
         FileUtil.write_eval_to_excel(excel_array, excel_eval_filename(self._trace_link_processor._dataset, self._trace_link_processor.output_prefix() + "_" + output_file_suffix))
         return (best_f1, best_elem_thresh, best_maj_thresh, best_file_thresh)
         
