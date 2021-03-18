@@ -1,7 +1,8 @@
 import abc, logging
 from EvalMatrix import EvalMatrix
 from Paths import excel_eval_filename, RECALL_PREC_CSV_HEADER,\
-    csv_recall_precision_filename, resulting_valid_tracelinks_csv_filename, all_resulting_tracelinks_csv_filename
+    csv_recall_precision_filename, resulting_valid_tracelinks_csv_filename, all_resulting_tracelinks_csv_filename,\
+    csv_recall_map_filename
 import FileUtil
 from Dataset import Dataset
 import Util
@@ -177,6 +178,31 @@ class MeanAveragePrecision(EvalStrategy):
             
         else: 
             log.info(f"No trace links for Mean Average Precision")
+     
+class WriteMAPRecallCSV(EvalStrategy):
+    """
+    Create csv file containing recall;map pairs by varying k in map@k
+    """
+    def _process_eval_results(self, eval_result_matrix: EvalMatrix, output_file_suffix=""):
+        log.info("Generationg csv...: ")
+        assert len(self._run_config.elem_thresholds) == 1, "Elem threshold needs to be a single threshold value"
+        assert len(self._run_config.majority_thresholds) == 1, "majority threshold needs to be a single threshold value"
+        assert len(self._run_config.file_level_thresholds) == 1, "file level threshold needs to be a single threshold value"
+        
+        e_thresh = self._run_config.elem_thresholds[0]
+        m_thresh = self._run_config.majority_thresholds[0]
+        f_thresh = self._run_config.file_level_thresholds[0]
+        if not eval_result_matrix.is_none_entry(e_thresh, m_thresh, f_thresh):
+            all_links = eval_result_matrix.all_trace_links(e_thresh, m_thresh, f_thresh)
+            recall_map_dict = Evaluator.evaluateMAPRecall(all_links, self._trace_link_processor._dataset, 
+                                        self._trace_link_processor._run_config.reverse_compare)
+                        
+            output_file_name = csv_recall_map_filename(self._trace_link_processor._dataset, output_file_suffix)
+            FileUtil.write_recall_precision_csv(recall_map_dict, output_file_name)
+            
+            log.info("... Done: ")     
+        else:
+            log.error(f"No trace links for e{e_thresh} m{m_thresh} f{f_thresh}")
             
 class SeparateAveragePrecision(EvalStrategy):
     """

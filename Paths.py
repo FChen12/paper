@@ -236,3 +236,6 @@ def excel_eval_filename(dataset, evalname: str):
 
 def csv_recall_precision_filename(dataset, evalname: str):
     return OUTPUT_DIR / ("recall_prec_" + dataset.name() + "_" + evalname + CSV_EXT)
+
+def csv_recall_map_filename(dataset, evalname: str):
+    return OUTPUT_DIR / ("recall_map_" + dataset.name() + "_" + evalname + CSV_EXT)

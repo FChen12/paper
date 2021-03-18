@@ -46,6 +46,22 @@ def calculate_mean_average_precision(req_dict, k, num_reqs, reverse_compare=Fals
         
     return  precision_sum / num_reqs
 
+def calculate_mean_average_precision_and_recall(req_dict, k, num_reqs, num_solution_links, reverse_compare=False):
+    """
+    req_dict["req_name"] = [(sim_to_code_1: float, relevant: bool), (sim_to_code_2, relevant), ...]
+    """
+    precision_sum = 0
+    num_relevant_links = 0
+    for req in req_dict:
+        first_k_links = sorted(list(req_dict[req]), key=lambda sim_rel_tuple: sim_rel_tuple[0], reverse= not reverse_compare)# most similar first
+        if k is not None:
+            first_k_links = first_k_links[:k]
+            assert len(first_k_links) == k
+        num_relevant_links += sum([1 if elem[1] else 0 for elem in first_k_links])
+        precision_sum += calculate_query_average_precision(first_k_links, reverse_compare)[0]
+        
+    return  precision_sum / num_reqs, num_relevant_links /num_solution_links
+
 def calculate_query_average_precision(similarity_relevance_list, reverse_compare=False):
     """
     Input: similarity_relevance_list = [(similarity, relevant)]

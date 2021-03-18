@@ -83,6 +83,31 @@ def evaluateMAP(trace_link_candidates, k, dataset: Dataset, reverse_compare=Fals
         text = "No Trace Link candidates!"
         log.info(text)
         return 0, 0
+    
+    req_dict = _build_req_dict_for_map(trace_link_candidates, dataset, reverse_compare)
+    map =  Util.calculate_mean_average_precision(req_dict, k, dataset.num_reqs(), reverse_compare)
+        
+    return map, len(trace_link_candidates)
+
+def evaluateMAPRecall(trace_link_candidates, dataset: Dataset, reverse_compare=False):
+    """
+    trace_link_candidates: List of TraceLink-objects
+    """
+    if not trace_link_candidates:
+        text = "No Trace Link candidates!"
+        log.info(text)
+        return 0, 0
+    
+    req_dict = _build_req_dict_for_map(trace_link_candidates, dataset, reverse_compare)
+    
+    recall_map_dict = {}
+    for k in range(1, len(dataset.all_original_code_file_names()) + 1):
+        map_k, rec_k = Util.calculate_mean_average_precision_and_recall(req_dict, k, dataset.num_reqs(), dataset.solution_matrix()._number_of_trace_links, reverse_compare)
+        recall_map_dict[rec_k] = map_k
+        print(f"{k}: {rec_k}, {map_k}")
+    return recall_map_dict
+
+def _build_req_dict_for_map(trace_link_candidates, dataset: Dataset, reverse_compare=False):
     trace_link_candidates = list(dict.fromkeys(trace_link_candidates)) # Deterministic duplicate removal (set is not stable)
     
     if len(trace_link_candidates) < dataset.num_original_links():
@@ -111,12 +136,12 @@ def evaluateMAP(trace_link_candidates, k, dataset: Dataset, reverse_compare=Fals
             req_dict[req_name].append(sim_rel_tuple_to_add)
         else:
             req_dict[req_name] = [sim_rel_tuple_to_add]
-    map =  Util.calculate_mean_average_precision(req_dict, k, dataset.num_reqs(), reverse_compare)
-    
+            
     if PRINT_FALSE_NEGATIVES:
         _print_false_negatives(sol_matrix_copy)
         
-    return map, len(trace_link_candidates)
+    return req_dict
+            
 def _print_false_negatives(sol_matrix_with_false_negatives):
     log.info(f"\nFalse Negatives: {sol_matrix_with_false_negatives._number_of_trace_links} Links, {sol_matrix_with_false_negatives.num_unique_reqs()} unique Reqs, {sol_matrix_with_false_negatives.num_unique_code()} unique Code")
     log.info("\n" + sol_matrix_with_false_negatives.print_str())
