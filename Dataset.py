@@ -250,7 +250,7 @@ class Itrust(Dataset):
     
     def packages(self):
         return ["edu.ncsu.csc.itrust"]
-    
+
 class Libest(Dataset):
     
     LIBEST_FOLDER = DATASETS / "LibEST"

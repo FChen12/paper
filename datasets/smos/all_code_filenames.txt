@@ -96,3 +96,5 @@ UserListItem.txt
 UserTest.txt
 Utility.txt
 Votes.txt
+display.txt
+managerUser.txt
