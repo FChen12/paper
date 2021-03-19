@@ -1,7 +1,7 @@
 import logging, re
 from Paths import *
 import FileUtil
-from Dataset import Dataset, Etour, Itrust, SmosTrans, EANCI
+from Dataset import Dataset, Etour, Itrust, SmosTrans, EANCI, EANCINoTrans
 
 
 """
@@ -204,4 +204,4 @@ def _split_param(params):
             result_param_list += [param]
     return result_param_list
 
-#read_raw_callgraph_txt(EANCI())
+#read_raw_callgraph_txt(EANCINoTrans())
