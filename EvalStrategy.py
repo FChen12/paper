@@ -375,8 +375,8 @@ class WritePrecisionRecallCSV(EvalStrategy):
     def _process_eval_results(self, eval_result_matrix: EvalMatrix, output_file_suffix=""):
         log.info("Generationg csv...: ")
         for elem_thresh in eval_result_matrix.elem_threshs:
+            recall_prec_dict = {} # use this to override duplicate recall values
             for m_thresh in eval_result_matrix.maj_threshs:
-                recall_prec_dict = {} # use this to override duplicate recall values
                 for f_thresh in eval_result_matrix.file_level_threshs:
                     if not eval_result_matrix.is_none_entry(elem_thresh, m_thresh, f_thresh):
                         recall = eval_result_matrix.recall(elem_thresh, m_thresh, f_thresh)
@@ -385,10 +385,11 @@ class WritePrecisionRecallCSV(EvalStrategy):
                             continue
                         recall_prec_dict[recall] = prec
                         
-                threshold_name = "_e{}m{}_".format(elem_thresh, self._run_config.majority_print[m_thresh])
-                output_file_name = csv_recall_precision_filename(self._trace_link_processor._dataset, self._trace_link_processor.output_prefix() \
-                                                                               + threshold_name + output_file_suffix) 
-                FileUtil.write_recall_precision_csv(recall_prec_dict, output_file_name)
+            #threshold_name = "_e{}m{}_".format(elem_thresh, self._run_config.majority_print[m_thresh])
+        threshold_name = ""
+        output_file_name = csv_recall_precision_filename(self._trace_link_processor._dataset, self._trace_link_processor.output_prefix() \
+                                                                           + threshold_name + output_file_suffix) 
+        FileUtil.write_recall_precision_csv(recall_prec_dict, output_file_name)
         log.info("... Done: ")
         
 class SaveEvalResultMatrix(EvalStrategy):
