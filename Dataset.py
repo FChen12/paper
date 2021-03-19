@@ -473,6 +473,20 @@ class EANCI(Dataset):
     def encoding(self):
         return "ISO-8859-1"
     
+class EANCINoTrans(EANCI):
+    EANCI_FOLDER = DATASETS / "eANCINoTrans"
+    EANCI_SOLUTION_MATRIX_PATH = EANCI_FOLDER / "solution_links.txt"
+    EANCI_REQ_DIR = EANCI_FOLDER / "req"
+    EANCI_CODE_DIR = EANCI_FOLDER / "code"
+    EANCI_RAW_CALLGRAPH = EANCI_FOLDER / "eancinotrans_raw_callgraph.txt"
+    EANCI_CLASS_CALLGRAPH_PATH = EANCI_FOLDER / "eancinotrans_class_callgraph.json"
+    EANCI_METHOD_CALLGRAPH_PATH = EANCI_FOLDER / "eancinotrans_method_callgraph.json"
+    EANCI_ALL_CODE_FILENAMES_FILE = EANCI_FOLDER / "all_code_filenames.txt"
+    EANCI_ALL_REQ_FILENAMES_FILE = EANCI_FOLDER / "all_req_filenames.txt"
+    
+    def name(self):
+        return "eancinotrans"
+    
 class Dronology(Dataset):
     
     DRONOLOGY_FOLDER = DATASETS / "dronology"
