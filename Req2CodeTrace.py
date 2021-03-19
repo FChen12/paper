@@ -803,7 +803,7 @@ FastTextUCNameDescFlowCommentIdentifierSentenceSpecificNoClassNameVoterWMDTLP
 """
 
 DROP_THRESHOLDS = Util.get_range_array(0, 1, 0.01)
-MAJORITY_THRESHOLDS = [1]#Util.get_range_array(0,1 , 0.2)
+MAJORITY_THRESHOLDS = Util.get_range_array(0, 0.1 , 0.01)
 ELEM_THRESHOLDS = [1]#Util.get_range_array(0.67, 0.69, 0.01)
 ###eval_strategy = MeanAveragePrecision(1)
 eval_strategy = WritePrecisionRecallCSV()
