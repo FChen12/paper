@@ -391,7 +391,7 @@ class WritePrecisionRecallCSV(EvalStrategy):
         output_file_name = csv_recall_precision_filename(self._trace_link_processor._dataset, self._trace_link_processor.output_prefix() \
                                                                            + threshold_name + output_file_suffix) 
         FileUtil.write_recall_precision_csv(recall_prec_dict, output_file_name)
-        FileUtil.write_dict_to_json(str(Paths.ROOT / output_file_suffix) + ".json", recall_prec_dict)
+        #FileUtil.write_dict_to_json(str(Paths.ROOT / output_file_suffix) + ".json", recall_prec_dict)
         log.info("... Done: ")
         
 class SaveEvalResultMatrix(EvalStrategy):

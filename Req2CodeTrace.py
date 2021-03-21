@@ -709,13 +709,13 @@ c = MockEmbeddingCreator(CODE_PREPROCESSOR, None, JavaCodeASTTokenizer(Etour308(
 tlp.precalculate_for_callgraph_files(None, None, r, c, "_javadoc_spacy")
 
 """
-"""
-#EANCI best
-r = MockEmbeddingCreator(REQ_PREPROCESSOR_IT, None, UCTokenizer(EANCINoTrans(), True), PREPROCESSED_REQ_OUTPUT_DIR)
-c = MockEmbeddingCreator(CODE_PREPROCESSOR_IT, None, JavaCodeASTTokenizer(EANCINoTrans(), JavaDocDescriptionOnlyTokenizer(EANCINoTrans(), True)), PREPROCESSED_CODE_OUTPUT_DIR) 
-tlp = FastTextUCNameDescFlowCommentIdentifierSentenceSpecificClassNameVoterOptionalWMDTLP.create(EANCINoTrans(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
-tlp.precalculate_for_callgraph_files(None, None, r, c, "_javadoc_spacy")
 
+#EANCI best
+r = MockEmbeddingCreator(REQ_PREPROCESSOR_IT, None, UCTokenizer(Smos(), True), PREPROCESSED_REQ_OUTPUT_DIR)
+c = MockEmbeddingCreator(CODE_PREPROCESSOR_IT, None, JavaCodeASTTokenizer(Smos(), JavaDocDescriptionOnlyTokenizer(Smos(), True)), PREPROCESSED_CODE_OUTPUT_DIR) 
+tlp = FastTextUCNameDescFlowCommentIdentifierSentenceSpecificClassNameVoterOptionalWMDTLP.create(Smos(), WORD_EMBD_CREATOR, tlc, ELEM_THRESHOLDS, MAJORITY_THRESHOLDS, DROP_THRESHOLDS, False, min, min, None)
+tlp.precalculate_for_callgraph_files(None, None, r, c, "_javadoc_spacy")
+"""
 #EANCI ohne Methkomm
 r = MockEmbeddingCreator(REQ_PREPROCESSOR_IT, None, UCTokenizer(EANCINoTrans(), True), PREPROCESSED_REQ_OUTPUT_DIR)
 c = MockEmbeddingCreator(CODE_PREPROCESSOR_IT, None, JavaCodeASTTokenizer(EANCINoTrans(), JavaDocDescriptionOnlyTokenizer(EANCINoTrans(), True)), PREPROCESSED_CODE_OUTPUT_DIR) 
@@ -802,12 +802,12 @@ FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP
 FastTextUCNameDescFlowCommentIdentifierSentenceSpecificNoClassNameVoterWMDTLP
 """
 
-DROP_THRESHOLDS = Util.get_range_array(0, 1, 0.01)
-MAJORITY_THRESHOLDS = Util.get_range_array(0, 0.1 , 0.01)
+DROP_THRESHOLDS = Util.get_range_array(0, 0.65, 0.01)
+MAJORITY_THRESHOLDS = Util.get_range_array(0.61, 0.65 , 0.01)
 ELEM_THRESHOLDS = [1]#Util.get_range_array(0.67, 0.69, 0.01)
 ###eval_strategy = MeanAveragePrecision(1)
 eval_strategy = WritePrecisionRecallCSV()
-
+#eval_strategy = WritePrecRecallF1Excel()
 def abc(w, clazz, dataset, r, c, o="_javadoc_spacy"):
     tlc = WeightedSimilaritySumCallElementLevelMajorityTLC(w, CallGraphTLC.NeighborStrategy.both)
     #tlc = FileLevelCosSimTraceLinkCreator()
@@ -816,7 +816,7 @@ def abc(w, clazz, dataset, r, c, o="_javadoc_spacy"):
     ##tlp.build_precalculated_name_and_load(r, c, dataset, output_suffix=o)
     #tlp.build_precalculated_name_and_load(dataset, output_suffix=o)
     eval_strategy.set_trace_link_processor(tlp)
-    eval_strategy.run(str(w))
+    eval_strategy.run("0.65")
     """
     tlp = clazz.create(dataset, WORD_EMBD_CREATOR, tlc, [1], [1], [1], False, min, min, None)
     #tlp.build_precalculated_name_and_load(r, c, dataset, output_suffix=o)
@@ -839,10 +839,9 @@ def abc(w, clazz, dataset, r, c, o="_javadoc_spacy"):
     eval_strateg2y.set_trace_link_processor(tlp)
     eval_strateg2y.run(str(w))
     """
-abc(0.9, FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP, Itrust(), "AverageSentenceEmbeddingCreator", "MethodCommentSignatureCallGraphEmbeddingCreator")
+#abc(0.9, FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP, Itrust(), "AverageSentenceEmbeddingCreator", "MethodCommentSignatureCallGraphEmbeddingCreator")
 ####FastTextCommentIdentifierClassNameVoterOptionalWMDTLP
 #abc(0.9, FastTextUCNameDescFlowSentenceSpecificIdentifierClassNameVoterOptionalWMDTLP, Etour308())
-Util.log_curr_time()
 """
 Best                        FastTextUCNameDescFlowCommentIdentifierSentenceSpecificClassNameVoterOptionalWMDTLP / FastTextCommentIdentifierSentenceClassNameVoterOptionalWMDTLP
 Ohne MethCom                FastTextUCNameDescFlowSentenceSpecificIdentifierClassNameVoterOptionalWMDTLP / FastTextSentenceLevelIdentifierClassNameOptionalWMDTLP
